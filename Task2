@@ -1,0 +1,52 @@
+from lxml import html
+import requests
+import re
+import string
+data = {"username": "realgord88", "password": "Dagestan88"}
+url = "http://31.23.214.207:1337/login"
+h = {
+	'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.157.62 Safari/537.36)'
+}
+s = requests.Session()
+s.headers.update(h)
+r = s.post(url, data=data, headers = h)
+
+
+while True:
+	q=s.get("http://31.23.214.207:1337/task2")
+	page = html.fromstring(q.text)
+	re_dns = re.compile(r'[0-9]+')
+	slovo = re.compile(r'Increase')
+	raq = page.xpath('//*[@id="taskform"]')
+	for i in raq:
+		misc = (i.text_content())
+		res = misc[:-72]
+		qwer = slovo.findall(res)
+		q = str(qwer)
+		c = q[2:-2]
+		if c == 'Increase':
+			match = re_dns.findall(res)
+			k = 0
+			for element in match:
+				match[k] = int(element)
+				k = k + 1
+			match.sort()
+			b = 0
+			for element in match:
+				match[b] = str(element)
+				b = b + 1
+			answer = (''.join(match))
+		else:
+			match = re_dns.findall(res)
+			k = 0
+			for element in match:
+				match[k] = int(element)
+				k = k + 1
+			match.sort()
+			match.reverse()
+			b = 0
+			for element in match:
+				match[b] = str(element)
+				b = b + 1
+			answer = (''.join(match))	
+	r = s.post('http://31.23.214.207:1337/checker', data={"answer":answer,"taskid":'2'}, headers = h)
